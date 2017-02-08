@@ -54,31 +54,50 @@ void commande_redirection(struct cmdline *l){
 }
 
 void commande_pipe(struct  cmdline *l){
-	int pid = Fork(); int status; int i=0;
-		if(pid == 0){
-			while(1){
-				pid = Fork();
-				int desc[2];
-				pipe(desc);
-				if(pid == 0 && l->seq[i+1] != 0){
-					i++;
-				} else if(pid == 0 && l->seq[i+1] == 0){
-					close(desc[0]);
-					dup2(desc[1],1);
-					execvp(l->seq[i][0], l->seq[i]);
-					exit(0);
-				}else{
-					close(desc[1]);
-					dup2(desc[0],0);
-					execvp(l->seq[i+1][0], l->seq[i+1]);
-					waitpid(pid, &status, 0);
-					break;
-				}
-			}
+	int tailleSeq; int tmp;
+	for(tailleSeq=0; l->seq[tailleSeq+1]!=0; tailleSeq++);
+	int pid = Fork(); int status; int i=0; int desc[2];
+	if(pid == 0){
+		pipe(desc);
+		pid=Fork();
+		if(pid != 0){
+			dup2(desc[0], 0);
+			close(desc[1]);
+			while( (tmp = waitpid(pid, &status, WNOHANG|WUNTRACED)) != pid);
+			execvp(l->seq[1][0], l->seq[tailleSeq]);
+			close(desc[0]);
 			exit(0);
 		}else{
-			waitpid(pid, &status, 0);
+			for(i = 1; i<=tailleSeq; i++){
+				if(i+1 <= tailleSeq){
+					dup2(desc[1], 1);
+					close(desc[0]);
+					pipe(desc);
+					pid = Fork();
+					if(pid != 0){
+						dup2(desc[0], 0);
+						close(desc[1]);
+						waitpid(pid, &status, 0);
+						execvp(l->seq[tailleSeq - i][0], l->seq[tailleSeq-1]);
+						exit(0);
+					}
+				} else{
+					dup2(desc[1], 1);
+					close(desc[0]);
+					execvp(l->seq[0][0], l->seq[0]);
+					exit(0);
+				}
+			}		
+					dup2(desc[1], 1);
+					close(desc[0]);
+					printf("test2\n\n");
+					execvp(l->seq[0][0], l->seq[0]);
+					close(desc[1]);
+					exit(0);
 		}
+	}else{
+		waitpid(pid, &status, 0);
+	}
 }
 
 int main(int argc, char * argv[])

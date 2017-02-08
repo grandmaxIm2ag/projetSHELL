@@ -10,7 +10,10 @@
 #include <unistd.h>
 #include "csapp.h"
 #include "readcmd.h"
+#include <time.h>
+#include <signal.h>
 
+static int child = 0;
 void commande_simple(struct cmdline *l){
 	int pid = Fork();
 	int status;
@@ -171,6 +174,30 @@ void commande_bg(struct cmdline *l){
 		}
 	}
 }
+
+void stop(int sig){
+	kill(child, SIGKILL);
+}
+void suspend(int sig){
+	kill(child, SIGSTOP);
+}
+void commande_signaux(struct cmdline *l){
+
+	int pid = Fork(); int status;
+
+	Signal(SIGINT, stop);	
+	Signal(SIGTSTP, suspend);
+
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		exit(0);
+	}else{
+		child = pid;
+		Signal(SIGINT, stop);
+		Signal(SIGTSTP, suspend);
+		while (waitpid(pid, &status, 0) != pid);
+	}
+}
 int main(int argc, char * argv[])
 {
 	while (1){
@@ -197,7 +224,7 @@ int main(int argc, char * argv[])
 			exit(0);
 
 		//commande1_final(l);
-		commande_bg(l);
+		commande_signaux(l);
 	}
 	exit(0);
 }

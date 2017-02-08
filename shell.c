@@ -224,7 +224,8 @@ int main(int argc, char * argv[])
 			exit(0);
 
 		//commande1_final(l);
-		commande_signaux(l);
+		//commande_signaux(l);
+		commande_redirection(l);
 	}
 	exit(0);
 }

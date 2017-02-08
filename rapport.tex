@@ -1,0 +1,275 @@
+\documentclass{report}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{mathrsfs}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage{siunitx}
+\lstset{
+  basicstyle=\footnotesize\tt,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,                    % adds a frame around the code
+  language=C,                 % the language of the code
+  keywordstyle=\bf,
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  tabsize=2                       % sets default tabsize to 2 spaces
+}
+
+
+
+
+
+\author{Grand Maxence, Muller Lucie}
+\title{Syst\`emes et R\'eseaux  : R\'ealisations d'un mini shell}
+\date{17/02/2017}
+
+
+\begin{document}
+	
+	\maketitle
+	\tableofcontents
+
+	\chapter*{Introduction}
+	\chapter{Partie 1}
+		\section{Commandes simples}
+		Dans cette partie nous devions impl\'ement\'e une fonction permettant d'ex\'ecuter une commande simple en shell. Pour tester no\^otre fonction nous avons tester plusieurs commande n'utilisant ni les pipes ni les redirections dans un shell et dans n\^otre programme shell. \\
+		Code :
+		\begin{lstlisting}
+void commande_simple(struct cmdline *l){
+	int pid = Fork();
+	int status;
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		exit(0);
+	}
+	else{
+		waitpid(pid, &status, 0);
+	}
+}
+		\end{lstlisting} 
+		Test \\ SHELL
+		\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls
+csapp.c  Makefile     rapport.log  rapport.tex  readcmd.c  README.md  shell.c    test   test3  tst    tube_simple.c
+csapp.h  rapport.aux  rapport.pdf  rapport.toc  readcmd.h  shell      sujet.pdf  test2  text   tst.c  waitpid1.c
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l
+total 2688
+-rwx------ 1 maxence maxence  20259 déc.  25  2014 csapp.c
+-rwx------ 1 maxence maxence   6105 mars  16  2014 csapp.h
+-rwx------ 1 maxence maxence    136 oct.   6  2009 Makefile
+-rwx------ 1 maxence maxence   1499 févr.  8 15:58 rapport.aux
+-rwx------ 1 maxence maxence  30949 févr.  8 15:58 rapport.log
+-rwx------ 1 maxence maxence 128494 févr.  8 15:58 rapport.pdf
+-rwx------ 1 maxence maxence   2558 févr.  8 16:02 rapport.tex
+-rwx------ 1 maxence maxence    933 févr.  8 15:58 rapport.toc
+-rwx------ 1 maxence maxence   4699 févr.  8 14:07 readcmd.c
+-rwx------ 1 maxence maxence   1029 févr.  8 14:02 readcmd.h
+-rwx------ 1 maxence maxence     14 févr.  7 18:02 README.md
+-rwx------ 1 maxence maxence  41024 févr.  8 15:45 shell
+-rwx------ 1 maxence maxence   4338 févr.  8 16:03 shell.c
+-rwx------ 1 maxence maxence  94332 févr.  7 12:01 sujet.pdf
+-rwx------ 1 maxence maxence    150 févr.  8 13:57 test
+-rwx------ 1 maxence maxence      3 févr.  8 13:58 test2
+-rwx------ 1 maxence maxence      3 févr.  7 15:51 test3
+-rwx------ 1 maxence maxence      0 févr.  7 15:36 text
+-rwx------ 1 maxence maxence  18008 févr.  8 12:08 tst
+-rwx------ 1 maxence maxence    723 févr.  7 13:55 tst.c
+-rwx------ 1 maxence maxence    815 janv. 31 15:18 tube_simple.c
+-rwx------ 1 maxence maxence    657 janv. 20  2009 waitpid1.c
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat test
+19
+pp.c
+csapp.h
+Makefile
+readcmd.c
+readcmd.h
+README.md
+shell
+shell.c
+shell.o
+sujet.pdf
+test
+test2
+test3
+text
+tst
+tst.c
+tst.o
+tube_simple.c
+waitpid1.c
+		\end{lstlisting}
+		shell.c
+		\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+shell> ls
+csapp.c  Makefile     rapport.log  rapport.tex	readcmd.c  README.md  shell.c	 test	test3  tst    tube_simple.c
+csapp.h  rapport.aux  rapport.pdf  rapport.toc	readcmd.h  shell      sujet.pdf  test2	text   tst.c  waitpid1.c
+shell> ls -l
+total 2688
+-rwx------ 1 maxence maxence  20259 déc.  25  2014 csapp.c
+-rwx------ 1 maxence maxence   6105 mars  16  2014 csapp.h
+-rwx------ 1 maxence maxence    136 oct.   6  2009 Makefile
+-rwx------ 1 maxence maxence   1499 févr.  8 15:58 rapport.aux
+-rwx------ 1 maxence maxence  30949 févr.  8 15:58 rapport.log
+-rwx------ 1 maxence maxence 128494 févr.  8 15:58 rapport.pdf
+-rwx------ 1 maxence maxence   4558 févr.  8 16:05 rapport.tex
+-rwx------ 1 maxence maxence    933 févr.  8 15:58 rapport.toc
+-rwx------ 1 maxence maxence   4699 févr.  8 14:07 readcmd.c
+-rwx------ 1 maxence maxence   1029 févr.  8 14:02 readcmd.h
+-rwx------ 1 maxence maxence     14 févr.  7 18:02 README.md
+-rwx------ 1 maxence maxence  41024 févr.  8 16:06 shell
+-rwx------ 1 maxence maxence   4338 févr.  8 16:03 shell.c
+-rwx------ 1 maxence maxence  94332 févr.  7 12:01 sujet.pdf
+-rwx------ 1 maxence maxence    150 févr.  8 13:57 test
+-rwx------ 1 maxence maxence      3 févr.  8 13:58 test2
+-rwx------ 1 maxence maxence      3 févr.  7 15:51 test3
+-rwx------ 1 maxence maxence      0 févr.  7 15:36 text
+-rwx------ 1 maxence maxence  18008 févr.  8 12:08 tst
+-rwx------ 1 maxence maxence    723 févr.  7 13:55 tst.c
+-rwx------ 1 maxence maxence    815 janv. 31 15:18 tube_simple.c
+-rwx------ 1 maxence maxence    657 janv. 20  2009 waitpid1.c
+shell> cat test
+19
+pp.c
+csapp.h
+Makefile
+readcmd.c
+readcmd.h
+README.md
+shell
+shell.c
+shell.o
+sujet.pdf
+test
+test2
+test3
+text
+tst
+tst.c
+tst.o
+tube_simple.c
+waitpid1.c
+shell>  echo "test"
+"test"
+shell>
+		\end{lstlisting}
+		\section{Commande avec redirections d'entr\'ee ou de sortie}
+			Dans cette section nous devions implenter une fonction permettant de ger\'les redirections d'entr\'ee ou de sortie. Nos test ont suivi les m\^eme principes que l'\'etape pr\'ec\'edente \`a l'exception que seul les commandes avec pipes ne seront pas test\'ees ici. \\ Code
+			\begin{lstlisting}
+void commande_redirection(struct cmdline *l){
+	int fOut = 1; int fIn = 0;
+
+	if(l->in != NULL)
+		fIn = open(l->in, O_RDONLY,0);
+	if(l->out != NULL)
+		fOut = open(l->out, O_WRONLY | O_CREAT, 0700) ;
+
+	int pid = Fork(); int status;
+	if(pid == 0){
+		if(fOut != 1){
+			close(1);
+			dup2(fOut, 1);
+		}
+		if(fIn == 0){
+			execvp(l->seq[0][0], l->seq[0]);
+			exit(0);
+		}else{
+			close(0);
+			dup2(fIn, 0);
+			execvp(l->seq[0][0], l->seq[0]);
+			exit(0);
+		}
+		
+	}
+	else{
+		waitpid(pid, &status, 0);
+	}
+}
+			\end{lstlisting}
+			Test \\ SHELL
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l > test
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat test
+total 2688
+-rwx------ 1 maxence maxence  20259 déc.  25  2014 csapp.c
+-rwx------ 1 maxence maxence   6105 mars  16  2014 csapp.h
+-rwx------ 1 maxence maxence    136 oct.   6  2009 Makefile
+-rwx------ 1 maxence maxence   1499 févr.  8 16:10 rapport.aux
+-rwx------ 1 maxence maxence  31866 févr.  8 16:10 rapport.log
+-rwx------ 1 maxence maxence 218712 févr.  8 16:10 rapport.pdf
+-rwx------ 1 maxence maxence   7408 févr.  8 16:16 rapport.tex
+-rwx------ 1 maxence maxence    933 févr.  8 16:10 rapport.toc
+-rwx------ 1 maxence maxence   4699 févr.  8 14:07 readcmd.c
+-rwx------ 1 maxence maxence   1029 févr.  8 14:02 readcmd.h
+-rwx------ 1 maxence maxence     14 févr.  7 18:02 README.md
+-rwx------ 1 maxence maxence  41024 févr.  8 16:06 shell
+-rwx------ 1 maxence maxence   4338 févr.  8 16:03 shell.c
+-rwx------ 1 maxence maxence  94332 févr.  7 12:01 sujet.pdf
+-rwx------ 1 maxence maxence      0 févr.  8 16:16 test
+-rwx------ 1 maxence maxence      3 févr.  8 13:58 test2
+-rwx------ 1 maxence maxence      3 févr.  7 15:51 test3
+-rwx------ 1 maxence maxence      0 févr.  7 15:36 text
+-rwx------ 1 maxence maxence  18008 févr.  8 12:08 tst
+-rwx------ 1 maxence maxence    723 févr.  7 13:55 tst.c
+-rwx------ 1 maxence maxence    815 janv. 31 15:18 tube_simple.c
+-rwx------ 1 maxence maxence    657 janv. 20  2009 waitpid1.c
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ wc -l < test
+23
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ wc -c < test
+1347
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ wc - < test > test2
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat test2
+  23  200 1347 -
+			\end{lstlisting}
+		\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+shell> ls -l > test
+shell> cat test
+total 2816
+-rwx------ 1 maxence maxence  20259 déc.  25  2014 csapp.c
+-rwx------ 1 maxence maxence   6105 mars  16  2014 csapp.h
+-rwx------ 1 maxence maxence    136 oct.   6  2009 Makefile
+-rwx------ 1 maxence maxence   1499 févr.  8 16:10 rapport.aux
+-rwx------ 1 maxence maxence  31866 févr.  8 16:10 rapport.log
+-rwx------ 1 maxence maxence 218712 févr.  8 16:10 rapport.pdf
+-rwx------ 1 maxence maxence   9314 févr.  8 16:22 rapport.tex
+-rwx------ 1 maxence maxence    933 févr.  8 16:10 rapport.toc
+-rwx------ 1 maxence maxence   4699 févr.  8 14:07 readcmd.c
+-rwx------ 1 maxence maxence   1029 févr.  8 14:02 readcmd.h
+-rwx------ 1 maxence maxence     14 févr.  7 18:02 README.md
+-rwx------ 1 maxence maxence  41024 févr.  8 16:23 shell
+-rwx------ 1 maxence maxence   4343 févr.  8 16:23 shell.c
+-rwx------ 1 maxence maxence  94332 févr.  7 12:01 sujet.pdf
+-rwx------ 1 maxence maxence      1 févr.  8 16:17 test
+-rwx------ 1 maxence maxence      1 févr.  8 16:17 test2
+-rwx------ 1 maxence maxence      3 févr.  7 15:51 test3
+-rwx------ 1 maxence maxence      0 févr.  7 15:36 text
+-rwx------ 1 maxence maxence  18008 févr.  8 12:08 tst
+-rwx------ 1 maxence maxence    723 févr.  7 13:55 tst.c
+-rwx------ 1 maxence maxence    815 janv. 31 15:18 tube_simple.c
+-rwx------ 1 maxence maxence    657 janv. 20  2009 waitpid1.c
+shell> wc -l < test
+23
+shell> wc -c < test
+1347
+shell> wc - < test > test2
+shell> cat test2
+  23  200 1347 -
+		\end{lstlisting}
+		\section{S\'equence de commandes compos\'ee de deux commandes reli\'es par un tube}
+		\section{S\'equence de commandes compos\'ee de plusieurs commandes et plusieurs tubes}
+	\chapter{Partie Bonus}
+		\section{Ex\'ecution de commandes en arri\`ere plan}
+		\section{Changer l'\'etat du processus au premier plan}
+		\section{Gestion des zombis}
+		\section{Commande integr\'ee jobs}
+		\section{Agir sur les commandes en arri\`ere plan}
+\end{document}

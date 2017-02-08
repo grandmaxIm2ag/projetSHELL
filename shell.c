@@ -156,6 +156,21 @@ void commande1_final(struct cmdline *l){
 	}
 }
 
+void commande_bg(struct cmdline *l){
+	int pid, status;
+
+	pid = Fork();
+
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		exit(0);
+	}else{
+		if(l->bg);
+		else{
+			waitpid(pid, &status, 0);
+		}
+	}
+}
 int main(int argc, char * argv[])
 {
 	while (1){
@@ -181,7 +196,8 @@ int main(int argc, char * argv[])
 		if(strcmp("exit", l->seq[0][0]) == 0)
 			exit(0);
 
-		commande1_final(l);
+		//commande1_final(l);
+		commande_bg(l);
 	}
 	exit(0);
 }

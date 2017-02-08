@@ -90,6 +90,10 @@ static char **split_in_words(char *line)
 			w = "|";
 			cur++;
 			break;
+		case '&':
+			w = "&";
+			cur++;
+			break;
 		default:
 			/* Another word */
 			start = cur;
@@ -184,6 +188,7 @@ struct cmdline *readcmd(void)
 	s->in = 0;
 	s->out = 0;
 	s->seq = 0;
+	s->bg = 0;
 
 	i = 0;
 	while ((w = words[i++]) != 0) {
@@ -199,6 +204,10 @@ struct cmdline *readcmd(void)
 				goto error;
 			}
 			s->in = words[i++];
+			break;
+		case '&':
+			
+			s->bg = 1;
 			break;
 		case '>':
 			/* Tricky : the word can only be ">" */

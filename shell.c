@@ -13,15 +13,22 @@
 #include <time.h>
 #include <signal.h>
 
-static int child = 0;
+struct job{
+	char* cmd;
+	int pid;
+};
+
+struct job** enCours;// = malloc(sizeof(struct job)*1);
+int nbEnCours = 0;
+int child = 0;
+
 void commande_simple(struct cmdline *l){
 	int pid = Fork();
 	int status;
 	if(pid == 0){
 		execvp(l->seq[0][0], l->seq[0]);
 		exit(0);
-	}
-	else{
+	}else{
 		waitpid(pid, &status, 0);
 	}
 }
@@ -102,6 +109,7 @@ void commande_pipe(struct cmdline *l){
 		waitpid(pid, &status, 0);
 	}
 }
+
 
 void commande1_final(struct cmdline *l){
 	if(l->seq[1]!=0){
@@ -198,11 +206,58 @@ void commande_signaux(struct cmdline *l){
 		while (waitpid(pid, &status, 0) != pid);
 	}
 }
+
+void zombi(int sig)
+{
+    pid_t pid;
+
+    if ((pid = waitpid(-1, NULL, WNOHANG|WUNTRACED)) < 0)
+        unix_error("waitpid error");
+    printf("Handler reaped child %d\n", (int)pid);
+    return;
+}
+
+void commande_zombi(struct cmdline *l){
+	Signal( SIGCHLD, zombi);
+	int pid = Fork();
+	int status;
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		exit(0);
+	}
+}
+
+void commande_job(struct cmdline *l){
+	int pid, status;
+
+	pid = Fork();
+
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		printf("coucou");
+		exit(0);
+	}else{
+		if(l->bg){
+			if(nbEnCours == 0){
+				enCours = malloc(sizeof(struct job*)*(nbEnCours+1));
+			}else{
+				enCours = realloc(enCours, nbEnCours+1);
+			}
+			enCours[nbEnCours]->cmd = malloc(sizeof(char)*strlen(l->seq[0][0]));
+			enCours[nbEnCours]->cmd = l->seq[0][0];
+			//enCours[nbEnCours]->pid = getpid();
+			nbEnCours++;
+		}
+		else{
+			waitpid(pid, &status, 0);
+		}
+	}
+}
+
 int main(int argc, char * argv[])
 {
 	while (1){
 		struct cmdline *l;
-		int i, j;
 
 		printf("shell> ");
 		l = readcmd();
@@ -222,10 +277,16 @@ int main(int argc, char * argv[])
 
 		if(strcmp("exit", l->seq[0][0]) == 0)
 			exit(0);
-
+		else if(strcmp("jobs", l->seq[0][0]) == 0){
+			printf("%d\n",nbEnCours);
+			int i;
+			for(i=0; i<nbEnCours; i++){
+				printf("[%d] \t status %s\n", i+1, enCours[i]->cmd);
+			}
+		}
 		//commande1_final(l);
 		//commande_signaux(l);
-		commande_redirection(l);
+		commande_job(l);
 	}
 	exit(0);
 }

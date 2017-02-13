@@ -265,11 +265,233 @@ shell> cat test2
   23  200 1347 -
 		\end{lstlisting}
 		\section{S\'equence de commandes compos\'ee de deux commandes reli\'es par un tube}
+			\begin{lstlisting}
+void commande_pipe(struct cmdline *l){
+	int tailleSeq; int tmp;
+	for(tailleSeq=0; l->seq[tailleSeq+1]!=0; tailleSeq++);
+	int pid = Fork(); int status; int i=0; int desc[2];
+	if(pid == 0){
+		pipe(desc);
+		pid=Fork();
+		if(pid != 0){
+			dup2(desc[0], 0);
+			close(desc[1]);
+			while( (tmp = waitpid(pid, &status, WNOHANG|WUNTRACED)) != pid);
+			execvp(l->seq[1][0], l->seq[tailleSeq]);
+			close(desc[0]);
+			exit(0);
+		}else{
+			for(i = 1; i<=tailleSeq; i++){
+				if(i+1 <= tailleSeq){
+					dup2(desc[1], 1);
+					close(desc[0]);
+					pipe(desc);
+					pid = Fork();
+					if(pid != 0){
+						dup2(desc[0], 0);
+						close(desc[1]);
+						waitpid(pid, &status, 0);
+						execvp(l->seq[tailleSeq - i][0], l->seq[tailleSeq-1]);
+						exit(0);
+					}
+				} else{
+					dup2(desc[1], 1);
+					close(desc[0]);
+					execvp(l->seq[0][0], l->seq[0]);
+					exit(0);
+				}
+			}		
+		}
+	}else{
+		waitpid(pid, &status, 0);
+	}
+}
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+shell> ls -l | wc -l
+23
+shell> ls -l | wc -l | wc -c
+3
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l | wc -l
+23
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l | wc -l | wc -c
+3
+			\end{lstlisting}
 		\section{S\'equence de commandes compos\'ee de plusieurs commandes et plusieurs tubes}
+			\begin{lstlisting}
+void commande1_final(struct cmdline *l){
+	if(l->seq[1]!=0){
+
+		int fOut = 1; int fIn = 0;
+			if(l->in != NULL)
+			fIn = open(l->in, O_RDONLY,0);
+		if(l->out != NULL)
+			fOut = open(l->out, O_WRONLY | O_CREAT, 0700) ;
+
+		int tailleSeq; int tmp;
+		for(tailleSeq=0; l->seq[tailleSeq+1]!=0; tailleSeq++);
+
+		int pid = Fork(); int status; int i=0; int desc[2];
+		if(pid == 0){
+			pipe(desc);
+			pid=Fork();
+			if(pid != 0){
+				dup2(fOut, 1);
+				dup2(desc[0], 0);
+				close(desc[1]);
+				while( (tmp = waitpid(pid, &status, WNOHANG|WUNTRACED)) != pid);
+				execvp(l->seq[1][0], l->seq[tailleSeq]);
+				close(desc[0]);
+				exit(0);
+			}else{
+				for(i = 1; i<=tailleSeq; i++){
+					if(i+1 <= tailleSeq){
+						dup2(desc[1], 1);
+						close(desc[0]);
+						pipe(desc);
+						pid = Fork();
+						if(pid != 0){
+							dup2(desc[0], 0);
+							close(desc[1]);
+							waitpid(pid, &status, 0);
+							execvp(l->seq[tailleSeq - i][0], l->seq[tailleSeq-1]);
+							exit(0);
+						}
+					} else{
+						dup2(fIn, 0);
+						dup2(desc[1], 1);
+						close(desc[0]);
+						execvp(l->seq[0][0], l->seq[0]);
+						close(desc[1]);
+						exit(0);
+					}
+				}		
+			}
+		}else{
+			waitpid(pid, &status, 0);
+		}
+	}else{
+		commande_redirection(l);
+	}
+}
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ head -5 < test | tail -2 | sort > tmp2
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat tmp2
+-rwx------ 1 maxence maxence    136 oct.   6  2009 Makefile
+-rwx------ 1 maxence maxence   1499 févr.  8 16:10 rapport.aux
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+shell>  head -5 < test | tail -2 | sort > tmp
+shell> cat tmp
+-rwx------ 1 maxence maxence    136 oct.   6  2009 Makefile
+-rwx------ 1 maxence maxence   1499 févr.  8 16:10 rapport.aux
+			\end{lstlisting}
 	\chapter{Partie Bonus}
 		\section{Ex\'ecution de commandes en arri\`ere plan}
+			\begin{lstlisting}
+void commande_bg(struct cmdline *l){
+	int pid, status;
+
+	pid = Fork();
+
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		exit(0);
+	}else{
+		if(l->bg);
+		else{
+			waitpid(pid, &status, 0);
+		}
+	}
+}
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
 		\section{Changer l'\'etat du processus au premier plan}
+			\begin{lstlisting}
+void stop(int sig){
+	printf("Fini\n");
+	kill(child, SIGKILL);
+}
+void suspend(int sig){
+	printf("Suspendu\n");
+	kill(child, SIGSTOP);
+}
+void commande_signaux(struct cmdline *l){
+
+	int pid = Fork(); int status;
+
+	Signal(SIGINT, stop);	
+	Signal(SIGTSTP, suspend);
+
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		exit(0);
+	}else{
+		child = pid;
+		Signal(SIGINT, stop);
+		Signal(SIGTSTP, suspend);
+		while (waitpid(pid, &status, 0) != pid);
+	}
+}
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ gedit 
+^C
+[2]+  Fini                    okular
+maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ gedit 
+^Z
+[1]+  Arrêté                gedit
+
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+shell> gedit
+^CFini
+
+			\end{lstlisting}
 		\section{Gestion des zombis}
+			\begin{lstlisting}
+void zombi(int sig)
+{
+    pid_t pid;
+
+    if ((pid = waitpid(-1, NULL, WNOHANG|WUNTRACED)) < 0)
+        unix_error("waitpid error");
+    printf("Handler reaped child %d\n", (int)pid);
+    return;
+}
+
+void commande_zombi(struct cmdline *l){
+	Signal( SIGCHLD, zombi);
+	int pid = Fork();
+	int status;
+	if(pid == 0){
+		execvp(l->seq[0][0], l->seq[0]);
+		exit(0);
+	}
+}
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
 		\section{Commande integr\'ee jobs}
+			\begin{lstlisting}
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
 		\section{Agir sur les commandes en arri\`ere plan}
+			\begin{lstlisting}
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
+			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
+			\end{lstlisting}
 \end{document}

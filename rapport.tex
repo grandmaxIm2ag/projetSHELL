@@ -40,6 +40,8 @@
 	\tableofcontents
 
 	\chapter*{Introduction}
+		Durant le projet, nous avons cr\'e\'e un interpr\^eteur de commande shell mais d'une fa\c{c}on simplifi\'ee. Il a fallut en comprendre la structure pour la refaire, et permettre a notre programme d'acc\`eder \`a des commandes simples puis \`a des commandes plus complexes g\`erant les redirections d'entr\'ees-sorties ainsi que les s\'equences de commandes pip\'ees.\\
+		Dans un second temps, nous avons am\'elior\'e notre shell pour lui permettant la gestion des diff\'erents plans, des signaux de terminaison et de suspension, des zombis et des jobs.
 	\chapter{Partie 1}
 		\section{Commandes simples}
 		Dans cette partie nous devions impl\'ement\'e une fonction permettant d'ex\'ecuter une commande simple en shell. Pour tester no\^otre fonction nous avons tester plusieurs commande n'utilisant ni les pipes ni les redirections dans un shell et dans n\^otre programme shell. \\
@@ -265,6 +267,7 @@ shell> cat test2
   23  200 1347 -
 		\end{lstlisting}
 		\section{S\'equence de commandes compos\'ee de deux commandes reli\'es par un tube}
+			Dans cette section, nous devons impl\'ementer une fonction permettant de g\`erer les pipes, c'est-\`a-dire de faire en sorte de rediriger la sortie standard d'un processus ou d'une commande vers l'entr\'ee standard d'un autre processus. Dans un premier temps, nous avons travaill\'e avec un seul pipe entre deux commandes. \\
 			\begin{lstlisting}
 void commande_pipe(struct cmdline *l){
 	int tailleSeq; int tmp;
@@ -320,6 +323,7 @@ maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -
 3
 			\end{lstlisting}
 		\section{S\'equence de commandes compos\'ee de plusieurs commandes et plusieurs tubes}
+	Cette partie est une am\`elioration apport\'ee a la partie pr\'ec\'edente. En effet, nous avons impl\'ement\'e une fonction qui permet au shell de g\`erer plusieurs pipes entre plusieurs commandes. Les diff\`erents processus appel\'es ne fonctionnent pas les uns apr\`s les autres, mais d'une fa\c{c}on pseudo-parall\`ele : le processus ne fonctionne que lorsqu'il re\c{c}oit les donn\`ees du processus qui le pr\'ec\`ede, qui envoie ces donn\'es au fur et a mesure\\
 			\begin{lstlisting}
 void commande1_final(struct cmdline *l){
 	if(l->seq[1]!=0){
@@ -391,6 +395,7 @@ shell> cat tmp
 			\end{lstlisting}
 	\chapter{Partie Bonus}
 		\section{Ex\'ecution de commandes en arri\`ere plan}
+	Dans cette section, nous avons impl\'ement\'e une fonction permettant de faire fonctionner des processus en arri\`ere plan : ils continuent de fonctionner sans bloquer le shell, ce qui permet a l'utilisateur de continuer de travailler et taper d'autres commandes pendant que le processus continue.\\
 			\begin{lstlisting}
 void commande_bg(struct cmdline *l){
 	int pid, status;
@@ -413,6 +418,7 @@ void commande_bg(struct cmdline *l){
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
 			\end{lstlisting}
 		\section{Changer l'\'etat du processus au premier plan}
+	Dans cette section, on a modifi\'e notre interpr\^eteur afin qu'il reconnaisse certains signaux agissant sur les processus en premier plan qui sont les signaux de terminaison et de suspension respectivement envoy\'es par la pression des touches Ctrl-C et Ctrl-Z.\\
 			\begin{lstlisting}
 void stop(int sig){
 	printf("Fini\n");
@@ -455,6 +461,7 @@ shell> gedit
 
 			\end{lstlisting}
 		\section{Gestion des zombis}
+	Dans cette section nous devons g\`erer les cas de prosessus fils qui n'ont pas termin\'es lors de la terminaison du shell, appel\'es zombis. Pour cela nous avons ajout\'e un signal qui le fait attendre jusqu'\`a la terminaison de chacun de ces fils, avant de se terminer lui-m\^eme.\\
 			\begin{lstlisting}
 void zombi(int sig)
 {
@@ -481,6 +488,7 @@ void commande_zombi(struct cmdline *l){
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
 			\end{lstlisting}
 		\section{Commande integr\'ee jobs}
+			Dans cette section, nous avons impl\'ementer la fonction Jobs du shell permettant d'afficher sur la sortie standard les differents job d\'emarr\'es durant la session courante de ce shell. Quand jobs indique la terminaison d'un job, il l'efface de la liste et donc ce job n'est plus dans la liste \`a l'appel suivant de jobs.\\
 			\begin{lstlisting}
 			\end{lstlisting}
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
@@ -488,6 +496,7 @@ void commande_zombi(struct cmdline *l){
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
 			\end{lstlisting}
 		\section{Agir sur les commandes en arri\`ere plan}
+			Dans cette section, il fallait que le programme agisse sur les jobs en arri\'ere plan. Pour cela il y avait trois commandes a impl\'ementer qui sont fg pour ramener un jobs au premier plan, bg pour mettre un jobs en arri\`ere plan et stop pour arr\^eter le jobs.\\
 			\begin{lstlisting}
 			\end{lstlisting}
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]

@@ -12,7 +12,6 @@ Structure representant les jobs
 struct job{
 	char* cmd; //Commande du processus
 	int pid; //pid du processus
-	int status; //status du processus
 };
 
 struct job** enCours;// = malloc(sizeof(struct job)*1);
@@ -37,7 +36,7 @@ void commande_simple(struct cmdline *l){
 		/*
 		Le pere attend la fin de son fils
 		*/
-		waitpid(pid, &status, 0);
+		while(waitpid(pid, &status, 0) != pid);
 	}
 }
 
@@ -98,7 +97,7 @@ void commande_redirection(struct cmdline *l){
 		/*
 		Le pere attend la fin d'execution du fils
 		*/
-		waitpid(pid, &status, 0);
+		while(waitpid(pid, &status, 0)!=pid);
 	}
 }
 
@@ -154,7 +153,7 @@ void commande_pipe(struct cmdline *l){
 					if(pid != 0){
 						dup2(desc[0], 0);
 						close(desc[1]);
-						waitpid(pid, &status, 0);
+						while(waitpid(pid, &status, 0) != pid);
 						execvp(l->seq[tailleSeq - i][0], l->seq[tailleSeq-1]);
 						exit(0);
 					}
@@ -168,7 +167,7 @@ void commande_pipe(struct cmdline *l){
 		}
 	}else{
 		// le processus pere attend la fin de tous ses descendants.
-		waitpid(pid, &status, 0);
+		while(waitpid(pid, &status, 0) != pid);
 	}
 }
 
@@ -228,7 +227,7 @@ void commande1_final(struct cmdline *l){
 				}		
 			}
 		}else{
-			waitpid(pid, &status, 0);
+			while(waitpid(pid, &status, 0) != pid);
 		}
 	}else{
 		/*Si nous n'avons pas de commande pipees alors
@@ -304,7 +303,6 @@ void zombi(int sig)
 
     if ((pid = waitpid(-1, NULL, WNOHANG|WUNTRACED)) < 0)
         unix_error("waitpid error");
-    printf("Handler reaped child %d\n", (int)pid);
     return;
 }
 void commande_zombi(struct cmdline *l){
@@ -327,13 +325,44 @@ void free_job(struct job** jobs, int taille){
 void affiche_job(){
 	int i;
 	for(i=0; i<nbEnCours; i++){
-		printf("[%d] \t %d %s\n", i+1, enCours[i]->status, enCours[i]->cmd);
+		printf("[%d] \t %d %s\n", i+1, enCours[i]->pid, enCours[i]->cmd);
 	}
 }
 void maj_job(int pid, int action){
+	switch(action){
+		case 0: //bg
+			printf("processus %d mis au second plan\n", pid);
+			break;
+		case 1: //fg
+			printf("processus %d mis au premier plan\n", pid);
+			break;
+		case 2: //stop
+			printf("processus %d Suspendu\n", pid);
+			kill(pid, SIGSTOP);
+			break;
+		default:
+			printf("Action impossible\n");
+	}
 }
 void maj_job2(int idx, int action){
+	int pid = enCours[idx-1]->pid;
+	maj_job(pid, action);
 }
+
+void ajout_job(struct cmdline *l, int pid){
+	if(nbEnCours == 0){
+		enCours = malloc(sizeof(struct job*)*(nbEnCours+1));
+		enCours[nbEnCours] = malloc(sizeof(struct job)*1);
+	}else{
+		enCours = realloc(enCours, (sizeof(struct job*)*(nbEnCours+1)));
+		enCours[nbEnCours] = malloc(sizeof(struct job)*1);
+	}
+	enCours[nbEnCours]->cmd = malloc(sizeof(char)*strlen(l->seq[0][0]));
+	memcpy(enCours[nbEnCours]->cmd, l->seq[0][0], strlen(l->seq[0][0]));
+	enCours[nbEnCours]->pid = pid;
+	nbEnCours++;
+}
+
 void commande_job(struct cmdline *l){
 	int pid, status;
 
@@ -344,47 +373,47 @@ void commande_job(struct cmdline *l){
 		exit(0);
 	}else{
 		if(l->bg){
-			if(nbEnCours == 0){
-				enCours = malloc(sizeof(struct job*)*(nbEnCours+1));
-				enCours[nbEnCours] = malloc(sizeof(struct job)*1);
-			}else{
-				enCours = realloc(enCours, (sizeof(struct job*)*(nbEnCours+1)));
-				enCours[nbEnCours] = malloc(sizeof(struct job)*1);
-			}
-			enCours[nbEnCours]->cmd = malloc(sizeof(char)*strlen(l->seq[0][0]));
-			memcpy(enCours[nbEnCours]->cmd, l->seq[0][0], strlen(l->seq[0][0]));
-			enCours[nbEnCours]->pid = getpid();
-			enCours[nbEnCours]->status = 0;//A modifier
-			nbEnCours++;
+			ajout_job(l, pid);
 		}
 		else{
-			waitpid(pid, &status, 0);
+			while(waitpid(pid, &status, 0) != pid);
 		}
 	}
 }
 
 void commande_plan(struct cmdline *l){
-	if(l->seq[0][1][0] == '%'){
-		char tmp[strlen(l->seq[0][1])];
-		memcpy(tmp, l->seq[0][1]+1, 4);
-		int idx = atoi(tmp);
-		if(strcmp(l->seq[0][0], "bg")){
-			maj_job2(idx, 0);
-		}else if(strcmp(l->seq[0][0], "fg")){
-			maj_job2(idx, 1);
+	if((strcmp(l->seq[0][0], "bg") == 0) || (strcmp(l->seq[0][0], "fg") == 0) || (strcmp(l->seq[0][0], "stop") == 0)){
+		int pid = Fork();
+		if(pid==0){
+			if(l->seq[0][1][0] == '%'){
+				char tmp[strlen(l->seq[0][1])];
+				memcpy(tmp, l->seq[0][1]+1, 4);
+				int idx = atoi(tmp);
+				if(strcmp(l->seq[0][0], "bg") == 0){
+					maj_job2(idx, 0);
+				}else if(strcmp(l->seq[0][0], "fg") == 0){
+					maj_job2(idx, 1);
+				}else{
+					maj_job2(idx, 2);
+				}
+			}else{
+				int pid = atoi(l->seq[0][1]);
+				printf("%d, %s\n",pid, l->seq[0][0]);
+				if(strcmp(l->seq[0][0], "bg") == 0){
+					maj_job(pid, 0);
+				}else if(strcmp(l->seq[0][0], "fg") == 0){
+					maj_job(pid, 1);
+				}else{
+					printf("coucou\n");
+					maj_job(pid, 2);
+				}
+			}
 		}else{
-			maj_job2(idx, 2);
+			int stat;
+			while(waitpid(pid,&stat, 0)!=pid);
 		}
-	}else{
-		int pid = atoi(l->seq[0][0]);
-		if(strcmp(l->seq[0][0], "bg")){
-			maj_job2(pid, 0);
-		}else if(strcmp(l->seq[0][0], "fg")){
-			maj_job2(pid, 1);
-		}else{
-			maj_job2(pid, 2);
-		}
-	}
+	}else
+		commande_job(l);
 }
 
 int main(int argc, char * argv[])
@@ -416,7 +445,8 @@ int main(int argc, char * argv[])
 		else if(strcmp("jobs", l->seq[0][0]) == 0){
 			affiche_job();
 		} else{
-			commande_signaux(l);
+			commande_plan(l);
+			//commande1_final(l);
 		}
 	}
 	exit(0);

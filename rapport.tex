@@ -71,10 +71,10 @@ void commande_simple(struct cmdline *l){
 		\end{lstlisting} 
 		Test \\ SHELL
 		\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls
+maxence@Sybil:~ ls
 csapp.c  Makefile     rapport.log  rapport.tex  readcmd.c  README.md  shell.c    test   test3  tst    tube_simple.c
 csapp.h  rapport.aux  rapport.pdf  rapport.toc  readcmd.h  shell      sujet.pdf  test2  text   tst.c  waitpid1.c
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l
+maxence@Sybil:~ ls -l
 total 2688
 -rwx------ 1 maxence maxence  20259 déc.  25  2014 csapp.c
 -rwx------ 1 maxence maxence   6105 mars  16  2014 csapp.h
@@ -98,7 +98,7 @@ total 2688
 -rwx------ 1 maxence maxence    723 févr.  7 13:55 tst.c
 -rwx------ 1 maxence maxence    815 janv. 31 15:18 tube_simple.c
 -rwx------ 1 maxence maxence    657 janv. 20  2009 waitpid1.c
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat test
+maxence@Sybil:~ cat test
 19
 pp.c
 csapp.h
@@ -253,8 +253,8 @@ void commande_redirection(struct cmdline *l){
 			\end{lstlisting}
 			Test \\ SHELL
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l > test
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat test
+maxence@Sybil:~ ls -l > test
+maxence@Sybil:~ cat test
 total 2688
 -rwx------ 1 maxence maxence  20259 déc.  25  2014 csapp.c
 -rwx------ 1 maxence maxence   6105 mars  16  2014 csapp.h
@@ -278,12 +278,12 @@ total 2688
 -rwx------ 1 maxence maxence    723 févr.  7 13:55 tst.c
 -rwx------ 1 maxence maxence    815 janv. 31 15:18 tube_simple.c
 -rwx------ 1 maxence maxence    657 janv. 20  2009 waitpid1.c
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ wc -l < test
+maxence@Sybil:~ wc -l < test
 23
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ wc -c < test
+maxence@Sybil:~ wc -c < test
 1347
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ wc - < test > test2
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat test2
+maxence@Sybil:~ wc - < test > test2
+maxence@Sybil:~ cat test2
   23  200 1347 -
 		\end{lstlisting}
 		shell.c
@@ -403,9 +403,9 @@ shell> ls -l | wc -l | wc -c
 			\end{lstlisting}
 			shell.c
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l | wc -l
+maxence@Sybil:~ ls -l | wc -l
 23
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ ls -l | wc -l | wc -c
+maxence@Sybil:~ ls -l | wc -l | wc -c
 3
 			\end{lstlisting}
 		\section{S\'equence de commandes compos\'ee de plusieurs commandes et plusieurs tubes}
@@ -438,8 +438,8 @@ void commande1_final(struct cmdline *l){
 			\end{lstlisting}
 			Test \\ SHELL
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ head -5 < test | tail -2 | sort > tmp2
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ cat tmp2
+maxence@Sybil:~ head -5 < test | tail -2 | sort > tmp2
+maxence@Sybil:~ cat tmp2
 -rwx------ 1 maxence maxence    136 oct.   6  2009 Makefile
 -rwx------ 1 maxence maxence   1499 févr.  8 16:10 rapport.aux
 			\end{lstlisting}
@@ -481,9 +481,9 @@ void commande_bg(struct cmdline *l){
 	\end{lstlisting}			
 	Test \\ SHELL :
 	\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ kate &
+maxence@Sybil:~ kate &
 [1] 7381
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ kate
+maxence@Sybil:~ kate
 
 			\end{lstlisting}
 			shell.c
@@ -527,10 +527,10 @@ void commande_signaux(struct cmdline *l){
 			\end{lstlisting}
 			Test \\ SHELL :
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ gedit 
+maxence@Sybil:~ gedit 
 ^C
 [2]+  Fini                    okular
-maxence@Sybil:/media/maxence/MyLinuxLive1/cours/l3_info/s06/SR/projetSHELL$ gedit 
+maxence@Sybil:~ gedit 
 ^Z
 [1]+  Arrêté                gedit
 
@@ -652,12 +652,12 @@ void commande_job(struct cmdline *l){
 			Test \\
 			SHELL : 
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
-maxence@Sybil:~/cours/SR/projetSHELL$ kate &
+maxence@Sybil:~$ jobs
+maxence@Sybil:~$ kate &
 [1] 7769
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
+maxence@Sybil:~$ jobs
 [1]+  En cours d'exécution   kate &
-maxence@Sybil:~/cours/SR/projetSHELL$ 
+maxence@Sybil:~$ 
 			\end{lstlisting}
 			shell.c :
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
@@ -854,30 +854,30 @@ void commande(struct cmdline *l){
 			\end{lstlisting}
 			Test \\ SHELL :
 			\begin{lstlisting}[frame=single,basicstyle=\footnotesize,language=bash]
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
-maxence@Sybil:~/cours/SR/projetSHELL$ kate
+maxence@Sybil:~$ jobs
+maxence@Sybil:~$ kate
 ^Z
 [1]+  Arrêté                kate
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
+maxence@Sybil:~$ jobs
 [1]+  Arrêté                kate
-maxence@Sybil:~/cours/SR/projetSHELL$ fg %1
+maxence@Sybil:~$ fg %1
 kate
 ^C
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
-maxence@Sybil:~/cours/SR/projetSHELL$ kate &
+maxence@Sybil:~$ jobs
+maxence@Sybil:~$ kate &
 [1] 8367
-maxence@Sybil:~/cours/SR/projetSHELL$ okular &
+maxence@Sybil:~$ okular &
 [2] 8381
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
+maxence@Sybil:~$ jobs
 [1]-  En cours d'exécution   kate &
 [2]+  En cours d'exécution   okular &
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
+maxence@Sybil:~$ jobs
 [1]-  En cours d'exécution   kate &
 [2]+  En cours d'exécution   okular &
-maxence@Sybil:~/cours/SR/projetSHELL$ fg %2
+maxence@Sybil:~$ fg %2
 okular
 ^C
-maxence@Sybil:~/cours/SR/projetSHELL$ jobs
+maxence@Sybil:~$ jobs
 [1]+  En cours d'exécution   kate &
 			\end{lstlisting}
 			shell.c :

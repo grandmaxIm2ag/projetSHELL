@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.1.14)  21 FEB 2017 16:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.1.14)  21 FEB 2017 16:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -704,7 +704,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 ]
 Chapitre 1.
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 47.
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 49.
 (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
@@ -716,7 +716,7 @@ File: lstlang1.sty 2015/06/04 1.6 listings language file
 ) [3
 
 ]
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 77.
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 79.
 
 (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -725,33 +725,38 @@ Chapitre 2.
 [12
 
 ] [13]
-LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 586
+Underfull \hbox (badness 10000) in paragraph at lines 550--551
+
+ []
+
+[14]
+LaTeX Font Info:    Try loading font information for TS1+lmtt on input line 600
 .
  (/usr/share/texmf/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [14] [15] [16] [17]
-[18] [19] [20] (./rapport.aux) ) 
+) [15] [16] [17] [18] [19]
+[20] [21] (./rapport.aux) ) 
 Here is how much of TeX's memory you used:
- 14649 strings out of 493029
- 281592 string characters out of 6136234
- 573080 words of memory out of 5000000
- 18047 multiletter control sequences out of 15000+600000
+ 14639 strings out of 493029
+ 281462 string characters out of 6136234
+ 551080 words of memory out of 5000000
+ 18037 multiletter control sequences out of 15000+600000
  85216 words of font info for 80 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  34i,6n,49p,10366b,1762s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc
-}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc
-/dvips/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/sh
-are/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public
-/lm/lmbx8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/tex
-mf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr1
-7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/
-type1/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></u
-sr/share/texmf/fonts/type1/public/lm/lmtti10.pfb>
-Output written on rapport.pdf (21 pages, 294223 bytes).
+{/usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc}{/us
+r/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvip
+s/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/t
+exmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/l
+mbx8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fo
+nts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr17.pfb
+></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1
+/public/lm/lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb></usr/sh
+are/texmf/fonts/type1/public/lm/lmtti10.pfb>
+Output written on rapport.pdf (22 pages, 296024 bytes).
 PDF statistics:
- 119 PDF objects out of 1000 (max. 8388607)
- 85 compressed objects within 1 object stream
+ 122 PDF objects out of 1000 (max. 8388607)
+ 87 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
